@@ -3,7 +3,7 @@ from bs4 import BeautifulSoup
 
 class WebCrawlerSpider(scrapy.Spider):
     name = "web_crawler"
-    start_urls = ["https://linum-lab.ca/"]
+    start_urls = ["https://freedium.cfd/https://bhavikjikadara.medium.com/graphrag-advanced-data-retrieval-for-enhanced-insights-bcef777404d2"]
 
     def parse(self, response):
         # Use BeautifulSoup to parse the HTML content

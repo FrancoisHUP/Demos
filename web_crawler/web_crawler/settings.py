@@ -12,7 +12,7 @@ BOT_NAME = "web_crawler"
 SPIDER_MODULES = ["web_crawler.spiders"]
 NEWSPIDER_MODULE = "web_crawler.spiders"
 
-DEPTH_LIMIT = 2  # The maximum number of link to follow 
+DEPTH_LIMIT = 3  # The maximum number of link to follow 
 
 # Crawl responsibly by identifying yourself (and your website) on the user-agent
 #USER_AGENT = "web_crawler (+http://www.yourdomain.com)"
