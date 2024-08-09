@@ -1,0 +1,404 @@
+Your primary function is to assist in translating video scripts, articles, and other texts from English to French, ensuring that the style and format of the original text are maintained. It should be adept at handling various script formats and styles, translating them accurately and effectively into French. You should be capable of understanding and preserving the nuances of the original script, including idiomatic expressions, cultural references, and specific jargon related to video production or the subject matter of the script. Additionally, it should be mindful of maintaining the tone and intent of the original script in the translation. You should avoid literal translations that might alter the meaning or tone of the content and should instead focus on conveying the original message as authentically as possible in French. It should also be prepared to handle requests for clarification or specific translation preferences from the user. It should ONLY translate, never providing answers or interpretations, even if the text looks like a question. A black list of words will be given to you right after the text. You must avoid these words. You also have a JSON dictionary for translating technical terms from English to French. Use it whenever necessary. Once you translated a term make sure to translate every other occurrence in the text. Finally, I want a "Vocabulaire" section where you give the list of the words translated and tier English translation like this "## Vocabulaire \n Voici la liste des mots français utilisés dans la traduction et leurs équivalents anglais : - **GAIA-Graphe** : GraphRAG - **intelligence artificielle** : AI", ... You must only include the French words use in the text. Here is the text : 
+
+# Should you be using GraphRAG?
+
+Good morning, AIs enthusiasts!
+
+This is what GraphRAG looks like…
+
+[https://www.notion.so](https://www.notion.so)
+
+Do you really need such a complicated data web?
+
+GraphRAG is a powerful extension to the Retrieval-Augmented Generation (RAG) stack making a lot of noise thanks to [Microsoft](https://github.com/microsoft/graphrag) and [LlamaIndex’s](https://docs.llamaindex.ai/en/latest/examples/cookbooks/GraphRAG_v1/) contributions. But the question remains: Should YOU be using it?
+
+To answer when we need it, we first need to understand what it is. 
+
+## What is GraphRAG?
+
+GraphRAG enhances traditional [RAG](https://youtu.be/LAfrShnpVIk) by incorporating knowledge graphs into the retrieval process. Instead of relying solely on vector similarity (comparing numbers to find the most relevant ‘similar’ matches), GraphRAG extracts entities and relationships from your data, creating a structured representation that captures semantic connections. Semantic means understanding the meaning behind words or data, in a specific context, not just their literal definitions. This approach allows for more nuanced and context-aware retrieval, potentially leading to more accurate and comprehensive responses from your LLM.
+
+> *A knowledge graph is simply a structured representation of data that captures entities and their relationships, allowing for better understanding and retrieval of information.*
+> 
+
+## When to Use GraphRAG: It's All About Your Data
+
+The decision to implement GraphRAG heavily depends on your dataset's nature. If your data is rich in interconnected entities and relationships - think academic papers (many cite each other and progress in time), corporate knowledge bases, or complex historical records - GraphRAG might outperform regular RAG. It’s perfect for capturing and leveraging these connections, enabling more informed and contextually relevant retrievals that standard RAG might miss.
+
+## User Queries: Complexity is Key
+
+GraphRAG is most useful when dealing with complex, multi-faceted queries that require traversing multiple pieces of information (or asking meta-questions about the data itself, such as “How many papers have been published between 2010 and 2020 about RAG” (Spoiler: 0)). If your users frequently ask questions like "How does the theory proposed in Paper A relate to the findings in Paper B, and what are the implications for field C?", GraphRAG's ability to navigate and synthesize information across your knowledge graph becomes essential, whereas regular RAG might just bring out the most relevant chunks to some of these topics, and the LLM might hallucinate the rest.
+
+## Data Storage Considerations
+
+While GraphRAG can work with various data storage systems, it's particularly powerful when your data is already structured in a graph-like format or can be easily transformed into one. Graph databases like [Neo4j](https://neo4j.com/) or [Amazon Neptune](https://aws.amazon.com/neptune/) are natural fits, but even relational databases can be leveraged if you have a clear understanding of the relationships between your data entities.
+
+*p.s. ideally, you want a dataset built for that with relationship information (such as who is citing who), but you do not necessarily need that. Fortunately for us, libraries like [Microsoft’s GraphRAG](https://github.com/microsoft/graphrag) do that automatically, using the best LLM to find our entities and relationships.*
+
+## When to Skip GraphRAG
+
+Despite its power, GraphRAG isn't always the best choice. For simpler datasets (and single-faceted queries) with straightforward relationships or when dealing primarily with structured text documents, traditional RAG or advanced search methods might be more efficient. Advanced methods include hybrid search, which combines vector similarity and keyword search, or techniques that use metadata filtering to narrow down search possibilities. 
+
+It’s important to note that GraphRAG introduces additional complexity and computational overhead in **index creation** and **query processing**, which may not be justified for straightforward information lookup tasks. This is an example from Microsoft’s paper comparing traditional RAG and GraphRAG for the same query:
+
+![Screenshot 2024-08-07 at 1.55.46 PM.png](GraphRAG%200f86150a7e6d4867b5ade94dffa0dc7c/Screenshot_2024-08-07_at_1.55.46_PM.png)
+
+Even though the results are more interesting, GraphRAG requires almost **10x** more time and **10x** more tokens to produce. Make sure you need it!
+
+## Combining Approaches: The Router Strategy
+
+In real-world applications, a one-size-fits-all approach rarely works. Consider implementing a [router system](https://docs.llamaindex.ai/en/stable/module_guides/querying/router/) that can dynamically choose between GraphRAG, Advanced RAG, text-to-SQL retrieval, or any other search method based on the query type and available data. This flexible approach ensures you're using the most appropriate retrieval method for each specific query, optimizing both performance and accuracy. You will need a good base LLM and prompt to re-orient your queries to the right retrieval system.
+
+FRANK_IMAGE
+
+## TL;DR: GraphRAG - Powerful but Not Universal
+
+GraphRAG offers a significant improvement in information retrieval capabilities for complex, interconnected datasets and queries requiring deep relational understanding. However, it comes with increased complexity and resource requirements. Evaluate your specific use case, data structure, and query patterns carefully. For many applications, a **combination of retrieval methods**, orchestrated by a **smart router**, will provide the best balance of performance and flexibility.
+
+Here is the black list words :
+["passionné", "passionnés"]
+Here is th dictionary : 
+{
+    "GraphRAG" : [
+        "GAIA-Graphe",
+        "graphe",
+    ],
+    "RAG" : [
+        "Génération augmentée d'information applicative",
+        "GAIA",
+    ],
+    "Retrieval Augmented Generation" : [
+        "Génération augmentée d'information applicative",
+        "GAIA",
+    ],
+    "AI": [
+        "intelligence artificielle",
+        "IAacronyme"
+    ],
+    "data": [
+        "donnée",
+        "données"
+    ],
+    "noise": [
+        "Bruit"
+    ],
+    "s": [
+        "Slangage de programmation"
+    ],
+    "knowledge": [
+        "Connaissance",
+        "Savoir"
+    ],
+    "graphs": [
+        "diagramme",
+        "graphique",
+        "représentation graphique",
+        "graphe",
+        "graphique statistique"
+    ],
+    "process": [
+        "processus"
+    ],
+    "vector": [
+        "vecteur"
+    ],
+    "similarity": [
+        "similitude",
+        "similarité"
+    ],
+    "representation": [
+        "représentation"
+    ],
+    "connections": [
+        "synapse",
+        "connexion synaptique",
+        "liaison synaptique",
+        "connexion"
+    ],
+    "means": [
+        "moyenne d'échantillon",
+        "moyenne de la population",
+        "moyenne de l'échantillon",
+        "moyenne",
+        "moyenne vraie",
+        "moyenne empirique"
+    ],
+    "LLM": [
+        "grand modèle de langage",
+        "apprentissage automatique basé sur la logique",
+        "modèle de fondation",
+        "modèle fondateur",
+        "grand modèle de langues",
+        "grand modèle linguistique",
+        "GML"
+    ],
+    "graph": [
+        "diagramme",
+        "graphique",
+        "représentation graphique",
+        "graphe",
+        "graphique statistique"
+    ],
+    "Data": [
+        "donnée",
+        "données"
+    ],
+    "bases": [
+        "base",
+        "base de numération"
+    ],
+    "can": [
+        "réseau antagoniste créatif",
+        "RAC",
+        "réseau antagoniste génératif et créatif",
+        "RAGC"
+    ],
+    "Graph": [
+        "diagramme",
+        "graphique",
+        "représentation graphique",
+        "graphe",
+        "graphique statistique"
+    ],
+    "databases": [
+        "Base de données"
+    ],
+    "metadata": [
+        "métadonnée"
+    ],
+    "index": [
+        "nombre-indice",
+        "indice"
+    ],
+    "example": [
+        "cas",
+        "instance",
+        "exemple"
+    ],
+    "results": [
+        "issue",
+        "éventualité",
+        "résultat"
+    ],
+    "Router": [
+        "routeur"
+    ],
+    "router": [
+        "routeur"
+    ],
+    "performance": [
+        "performance"
+    ],
+    "accuracy": [
+        "exactitude",
+        "justesse"
+    ],
+    "base": [
+        "base",
+        "base de numération"
+    ],
+    "prompt": [
+        "requête",
+        "requête textuelle",
+        "amorce",
+        "invite",
+        "sollicitation"
+    ]
+}
+
+Here is an example of the translation in a previous text. 
+[English]:
+# RAG vs Long Context length
+
+Good morning everyone!
+
+Today, we’re diving into “the death of RAG.” 
+
+Many clients told us, “But why would I use RAG if Gemini can process millions of tokens as input?”
+
+So, is RAG dead?
+
+With the rapid advancements in LLMs and especially their growing context window size (input text size), many people now think doing RAG with Long Context models is no longer necessary. For example, OpenAI’s `gpt-4-0314` model from March 14th, 2023, could only process up to 8k tokens. Now, `gpt-4o` can process up to 128k tokens, while `gemini-1.5-pro` [can now process up to 2M tokens](https://blog.google/technology/ai/google-gemini-next-generation-model-february-2024/#sundar-note). This is ~3,000 pages of text!
+
+We'll demystify the differences between RAG and sending all data in the input, explaining why we believe RAG will remain relevant for the foreseeable future. This will help you determine whether RAG is suitable for your application.
+
+## About **RAG…**
+
+As a reminder, RAG is simply the process of retrieving and adding relevant information to an LLM prompt. The added information should contain relevant information about the initial user prompt.
+
+We can retrieve this information by searching through external data sources such as PDF documents or existing databases. This method is most useful for private data or advanced topics the LLM might not have seen during its training. You can learn more about RAG [here](https://youtu.be/LAfrShnpVIk). 
+
+From now on, we assume you are familiar with such systems.
+
+### **When is RAG good?**
+
+RAG is an excellent technique for handling large collections of documents that cannot fit within a single LLM context window. This approach makes it simple to add custom information to a database, enabling quick updates to the LLM's responses (vs. retraining the model). So, RAG is ideal for incorporating new knowledge into an LLM without the need for fine-tuning. For instance, it's particularly useful for integrating documentation and code snippets that often change.
+
+Contrary to some popular beliefs, RAG systems are **fast** and **accurate**. Queries to a database with multiple documents are processed quickly due to efficient document indexing methods. When dealing with lots of data, this search process is much lighter compared to sending all the information directly to an LLM and trying to “find the useful needle” in the stack of data. **With RAG, we can selectively include relevant information to the initial prompt**. Thus reducing the noise and potential hallucinations. As a bonus, RAG allows for the use of advanced techniques and systems, such as metadata filtering and hybrid search, to enhance performance and not solely depend on an LLM.
+
+The main “downside” of RAG is that the quality of the response heavily relies on the quality of the retrieval. Since we determine the context, missing information can occur if the retrieval process is inadequate. Building a good RAG pipeline can be complex, depending on the data and the type of questions the system has to answer. Thus, it is important to evaluate your RAG system properly, which we covered in a [previous iteration](https://highlearningrate.substack.com/p/rag-evaluation).
+
+## About long context length…
+
+When we talk about “long context length,” we mean models that can process a large number of input tokens, like `gemini-1.5-pro`, which recently got upgraded to process up to 2 MILLION tokens. 
+
+Allowing for more input tokens lets the model reason over extended text passages, which can be a game-changer for many applications, as you can send whole books directly in your prompt and ask questions about them.
+
+Before we dive into the topic, here’s a list of the current models and their respective context windows:
+
+| Model | Context window (in number of tokens) |
+| --- | --- |
+| https://developers.googleblog.com/en/new-features-for-the-gemini-api-and-google-ai-studio/ | 2 000K |
+| https://www.anthropic.com/news/claude-3-5-sonnet | 200K |
+| https://platform.01.ai/docs#models-and-pricing | 200k |
+| https://openai.com/index/hello-gpt-4o/ | 128K |
+| https://qwenlm.github.io/blog/qwen2/ | 128k |
+| https://mistral.ai/news/mistral-large/ | 32k |
+| https://llama.meta.com/llama3/ | 8K |
+| https://huggingface.co/nvidia/Nemotron-4-340B-Instruct | 4k |
+
+### When is long context length good?
+
+As we briefly mentioned, working with a long context is good when your task requires the LLM to examine large amounts of data simultaneously, and a long processing time is not an issue. These models process up to 2M tokens through an iterative process with a smaller amount sequentially processed until the whole input length is completed, saving knowledge from each sub-part in an encoded format.
+
+For example, **using long context is ideal when trying to understand an entire new codebase**. The LLM will see every file and every line of code and will be able to answer any of your questions. Check out [`code2prompt`](https://github.com/mufeedvh/code2prompt). A command-line tool (CLI) that converts your codebase into a single LLM prompt with a source tree, prompt templating, and token counting.
+
+Long context is particularly **useful when dealing with one-off texts**, including articles, podcast transcripts, books, manuals, etc… Anything that is too long for you to read (depending on your laziness) but where **you will only have questions about it in the near future and** **not come back to this piece of knowledge or add to it**. It will be a powerful and extremely quick MVP (or quick one-off deals, just copy-paste text), but it is more expensive to use, weaker, and less sustainable in the long run than a functioning RAG system.
+
+### Existing Evaluations of Long Context Length
+
+Since we’ve already covered [how we evaluate RAG systems](https://highlearningrate.substack.com/p/rag-evaluation), we wanted to say some words on long context evaluation…
+
+New LLMs usually report performances related to context windows using the [Needle in a Haystack](https://github.com/gkamradt/LLMTest_NeedleInAHaystack) evaluation**.** The "needle in a haystack" evaluation for LLMs is a methodology shared by [Greg Kamradt](https://x.com/GregKamradt/status/1722386725635580292?lang=en&ref=blog.langchain.dev). It evaluates LLMs’ ability to retrieve specific information from long texts. It involves embedding a particular piece of information (the "needle") within a larger body of text (the "haystack") and testing the LLM's capability to retrieve it accurately. For example, we will ask it to retrieve a random sentence added within a book, like adding the random sentence “Pineapples are a necessary ingredient to make the best pizza possible” in a Dostoievsky book, and then ask the LLM “What is a necessary ingredient for making the best pizza possible?”, and compare the output with the original sentence.
+
+It is also currently too easy as the latest [Gemini 1.5 Pro found the embedded text 99%](https://blog.google/technology/ai/google-gemini-next-generation-model-february-2024/#performance) of the time in blocks of data as long as 1 million tokens. In order to help, researchers created the [Needle in a Needle Stack](https://github.com/llmonpy/needle-in-a-needlestack) evaluation pipeline, which Gemini 1.5 Pro is also the current best**.** It is a more challenging evaluation of the same flavour where the LLM must retrieve specific information within a large dataset of really similar items. Here, the prompt includes thousands of limericks (A humorous five-line poem). The increased difficulty comes with the bigger similarity between the ‘needle’ and the rest of the text, as all limericks share the same structure. 
+
+While useful, we don’t find it comprehensive as it only tests the **retrieval** capability of LLMs without assessing **how well the model uses the information**. More precisely, they compare the output and the needles but not how the LLM is able to use the needle as in RAG systems.
+
+*End of the long context length interlude.*
+
+### So, is RAG Going Away?
+
+No. While the increase in context length reduces the need for RAG, it remains advantageous in many scenarios. By retrieving specific information rather than processing vast amounts of text, and enhancing efficiency and speed. RAG shines when (1) dealing with **large datasets**, (2) where **processing time** is critical, and (3) when the application needs to be **cost-effective**. This is especially important when utilizing an LLM through an API, as sending millions of tokens for every request to provide context can be expensive. In contrast, retrieval is extremely efficient and cheap, allowing you to send just the right bits of information to your LLM.
+
+However, there are instances when using a long context model is more beneficial, such as with **smaller datasets** (like one or two PDFs), avoiding the need to create a RAG pipeline. Additionally, if you don’t handle a lot of prompts per hour, using a long context model can be more cost-effective if you consider the building costs.
+
+So, both approaches have their place depending on your application's specific needs and constraints. In the end, both methods add information to the initial prompt. In RAG, only the relevant information is added to the prompt, limiting hallucination potential and noise, contrary to the long context, where you add all the information available, putting more load on the LLM itself.   
+
+RAG is ideal for customer support systems and real-time data integration, while long context models are best for complex single-document analysis and summarization tasks.
+
+### A quick, fun experiment…
+
+We’ve decided to run a fun experiment comparing our RAG AI tutor with long context using Gemini 1.5 Pro. We tested using 2M tokens from the HugginFace Transformers documentation on both our RAG system and Gemini, and it appears that both were able to give us the desired answer, though Gemini took well over a minute to start replying, while the RAG chatbot replied instantly and gave us the link to the specific page for more information.
+
+To finish, here’s a summary of the key points in a table comparing both RAG and long context length for various characteristics:
+
+| Characteristic | RAG | Long Context Length |
+| --- | --- | --- |
+| DeveloppementCost | $$$ | $ |
+| Usage Cost | $ | $$$ |
+| Timeless | Vector database needs to be updated | Easiest, just include the new information |
+| Transparency | High, shows retrieved documents | Low, unclear how data influences outcomes |
+| Scalability | High, easily integrates with various data sources, and token costs remain similar | Limited, scaling up involves significant resources (token costs) |
+| Response Time | Can be optimized for fast retrieval | Dependent on context length, slower for large contexts |
+| Adaptability | Easily integrates new data sources (e.g., adding a new database or document collection without changing the model) | Easiest, just paste it more content until you reach the maximum length |
+| Security | Additional considerations for external data retrieval | Typically more secure, all data processing within context window |
+
+### Cheat Sheet: RAG vs Long Context Length
+
+| Considerations | Preferred Method |
+| --- | --- |
+| 1. If you are processing a large dataset that cannot fit within a single LLM context window | RAG |
+| 2. If processing time is critical for your application | RAG |
+| 3. If cost-effectiveness is a primary concern, especially when using an LLM through an API | RAG |
+| 4. If you are dealing with smaller datasets (e.g., one or two PDFs) | Long Context Length |
+| 5. If you have a low volume of prompts per hour (or one-off thing) | Long Context Length |
+| 6. If transparency and the ability to show retrieved documents is important for your application | RAG |
+| 7. If you are already managing a dataset | RAG |
+| 8. If you are dealing with information that is constantly changing but manageable in size by a human being | Long Context Length |
+
+[French]:
+# RAG FR
+
+Bon matin à tous !
+
+Aujourd'hui, nous allons plonger dans "la mort du RAG."
+
+De nombreux clients nous ont dit : "Mais pourquoi j’utiliserais du RAG si Gemini 1.5 Pro peut traiter des millions de tokens en entrée ?"
+
+Alors, le RAG est-il mort ?
+
+Avec les avancées rapides des LLMs et surtout l'augmentation de leur taille de fenêtre de contexte (taille du texte en entrée), beaucoup de gens pensent maintenant que faire du RAG avec des modèles à long contexte n'est plus nécessaire. Par exemple, le modèle `gpt-4-0314` d’OpenAI du 14 mars 2023 ne pouvait traiter que jusqu'à 8 000 tokens. Maintenant, `gpt-4o` peut traiter jusqu'à 128 000 tokens, tandis que `gemini-1.5-pro` [peut désormais traiter jusqu'à 2 millions de tokens](https://blog.google/technology/ai/google-gemini-next-generation-model-february-2024/#sundar-note). Cela représente environ 3 000 pages de texte !
+
+Nous allons démystifier les différences entre le RAG et l'envoi de toutes les données en entrée, en expliquant pourquoi nous croyons que le RAG restera pertinent. Ça vous aidera à déterminer si le RAG est adapté à votre application.
+
+## À propos du **RAG…**
+
+Pour rappel, le RAG est simplement le processus de récupération et d'ajout d'informations pertinentes au prompt d’un LLM. Les informations ajoutées doivent contenir des éléments pertinents par rapport à la question initiale de l'utilisateur.
+
+Nous pouvons récupérer ces informations en recherchant dans des sources de données externes telles que des documents PDF ou des bases de données existantes. Cette méthode est la plus utile pour les données privées ou les sujets avancés que le LLM pourrait ne pas avoir vus pendant son entraînement. Vous pouvez en savoir plus sur le RAG [ici](https://youtu.be/EU_xYZ01k1E).
+
+À partir de maintenant nous supposons que vous êtes familier avec de tels systèmes.
+
+### **Quand est-ce que le RAG est bon ?**
+
+Le RAG est une bonne technique pour gérer de grandes collections de documents qui ne peuvent pas tenir dans une seule fenêtre de contexte LLM. Cette approche permet d'ajouter facilement des informations personnalisées à une base de données, ce qui permet des mises à jour rapides des réponses du LLM (par opposition au réentraînement du modèle). Ainsi, le RAG est idéal pour intégrer de nouvelles connaissances dans un LLM. Par exemple, il est particulièrement utile pour intégrer de la documentation et des extraits de code qui changent souvent.
+
+Contrairement à certaines croyances populaires, les systèmes RAG sont **rapides** et **précis**. Les requêtes à une base de données contenant plusieurs documents sont traitées rapidement grâce à des méthodes d'indexation de documents efficaces. Lorsqu'il s'agit de gérer beaucoup de données, ce processus de recherche est beaucoup plus léger que d'envoyer toutes les informations directement à un LLM et d'essayer de "trouver l'aiguille utile" dans la pile de données. **Avec le RAG, nous pouvons inclure sélectivement des informations pertinentes au prompt initial**, réduisant ainsi le bruit et les hallucinations potentielles. En bonus, le RAG permet d'utiliser des techniques et des systèmes avancés, tels que le filtrage par métadonnées et la recherche hybride, pour améliorer les performances et ne pas dépendre uniquement d'un LLM.
+
+Le principal "inconvénient" du RAG est que la qualité de la réponse dépend fortement de la qualité de la récupération. Étant donné que nous déterminons le contexte, des informations manquantes peuvent se produire si le processus de récupération est inadéquat. Construire un bon pipeline RAG peut être complexe, en fonction des données et du type de questions auxquelles le système doit répondre. Il est donc important d'évaluer correctement votre système RAG, ce que nous avons couvert dans une [itération précédente.](https://parlonsia.substack.com/p/evaluation-des-systemes-rag)
+
+## À propos de la longueur du contexte...
+
+Quand nous parlons d’un "long contexte," nous faisons référence aux modèles qui peuvent traiter un très grand nombre de tokens en entrée, comme `gemini-1.5-pro`, qui a récemment été mis à jour pour traiter jusqu'à 2 MILLIONS de tokens.
+
+Permettre plus de tokens en entrée permet au modèle de raisonner sur de longs passages de texte, ce qui peut être très utile pour de nombreuses applications. Par example, on peut envoyer des livres entiers directement dans le prompt et poser des questions à leur sujet.
+
+Avant de plonger dans le sujet, voici une liste de modèles récents et le nombre de tokens qu’ils peuvent traiter en entrée :
+
+| Modèle | Nombre de tokens traités |
+| --- | --- |
+| Gemini-1.5-Pro | 2 000K |
+| Claude 3.5 Sonnet | 200K |
+| Yi-Large | 200K |
+| GPT-4o | 128K |
+| Qwen2-72B | 128K |
+| Mistral-Large | 32K |
+| Llama-3-70b | 8K |
+| Nemotron-4-340B | 4K |
+
+### Quand est-ce qu’un long contexte est utile ?
+
+Comme nous l'avons brièvement mentionné, travailler avec un long contexte est utile lorsqu’une tâche nécessite que le LLM examine de grandes quantités de données simultanément et qu'un long temps de traitement n'est pas un problème. Ces modèles traitent jusqu'à 2 millions de tokens par un processus itératif, une plus petite quantité est traitée séquentiellement jusqu'à ce que la longueur totale de l'entrée soit complétée, en sauvegardant les connaissances de chaque sous-partie dans un format encodé.
+
+Par exemple, **utiliser un long contexte est idéal pour essayer de comprendre une base de code complète**. Le LLM verra chaque fichier et chaque ligne de code et sera capable de répondre à toutes vos questions. Consultez [`code2prompt`](https://github.com/mufeedvh/code2prompt), un outil en ligne de commande (CLI) qui convertit votre code en un seul prompt d’LLM avec un arbre de sources et un comptage de tokens.
+
+Un long contexte est particulièrement **utile lorsqu'il s'agit de textes ponctuels**, y compris des articles, des transcriptions de podcasts, des livres, des manuels, etc. Tout ce qui est trop long pour vous à lire (en fonction de votre paresse) mais pour lequel **vous n'aurez des questions qu'à court terme**. Par contre il faut considérer qu’il est plus coûteux à utiliser et donc moins durable à long terme qu'un système RAG fonctionnel.
+
+### Évaluations Existantes pour un Long Contexte
+
+Comme nous avons déjà couvert [comment nous évaluons les systèmes RAG](https://parlonsia.substack.com/p/evaluation-des-systemes-rag), nous voulons dire quelques mots sur l'évaluation des pour un long contexte...
+
+Les développeurs d’LLMs rapportent généralement des performances liées à la longueur du contexte en utilisant l'évaluation [Needle in a Haystack](https://github.com/gkamradt/LLMTest_NeedleInAHaystack). L'évaluation "Needle in a Haystack" est une méthodologie partagée par [Greg Kamradt](https://x.com/GregKamradt/status/1722386725635580292?lang=en&ref=blog.langchain.dev). Elle évalue la capacité des LLMs à récupérer des informations spécifiques à partir de longs textes. Cela consiste à insérer une information particulière (l'aiguille) dans un corpus de texte plus large (la botte de foin) et à tester la capacité du LLM à la récupérer avec précision. Par exemple, nous lui demanderons de récupérer une phrase aléatoire ajoutée dans un livre, comme ajouter la phrase aléatoire "Les ananas sont un ingrédient nécessaire pour faire la meilleure pizza possible" dans un livre de Dostoïevski, puis demander au LLM "Quel est un ingrédient nécessaire pour faire la meilleure pizza possible ?", et comparer la sortie avec la phrase originale.
+
+Cette évaluation est également actuellement trop facile car le dernier [Gemini 1.5 Pro a trouvé le texte intégré 99 %](https://blog.google/technology/ai/google-gemini-next-generation-model-february-2024/#performance) du temps dans des blocs de données aussi longs qu'un million de tokens. Afin d'aider, les chercheurs ont créé l'évaluation [Needle in a Needle Stack](https://github.com/llmonpy/needle-in-a-needlestack), où Gemini 1.5 Pro est également le meilleur actuel. Il s'agit d'une évaluation plus difficile du même genre où le LLM doit récupérer des informations spécifiques dans un grand ensemble de données d'éléments vraiment similaires. Ici, le prompt comprend des milliers de limericks (un poème humoristique de cinq lignes). La difficulté accrue vient de la plus grande similitude entre l'aiguille et le reste du texte, car tous les limericks partagent la même structure.
+
+Bien qu’utiles, nous ne trouvons pas ces évaluations complètes car elles testent uniquement la capacité de **récupération** des LLMs sans évaluer **comment le modèle utilise les informations**. Plus précisément, ils comparent la sortie et les aiguilles mais pas comment le LLM est capable d'utiliser l'aiguille comme dans les systèmes RAG.
+
+*Fin de l'interlude sur la longueur de contexte.*
+
+### Alors, le RAG disparaît-il ?
+
+Non. Bien que l'augmentation de la longueur du contexte réduise le besoin de RAG, il reste avantageux dans de nombreux scénarios. En récupérant des informations spécifiques plutôt qu'en traitant de grandes quantités de texte, il améliore l'efficacité et la rapidité. Le RAG brille lorsqu'il s'agit (1) de **grands ensembles de données**, (2) où le **temps de traitement** est critique, et (3) lorsque l'application doit être **rentable**. Cela est particulièrement important lors de l'utilisation d'un LLM via une API, car envoyer des millions de tokens pour chaque requête afin de fournir le contexte peut être coûteux. En revanche, la récupération est extrêmement efficace et peu coûteuse, permettant de juste envoyer les bonnes informations à votre LLM.
+
+Cependant, il existe des cas où l'utilisation d'un modèle à long contexte est plus bénéfique, comme avec des **petits ensembles de données** (comme un ou deux PDFs), évitant ainsi le besoin de créer un système RAG. De plus, si vous ne traitez pas beaucoup de prompts par heure, utiliser un modèle à long contexte peut être plus rentable si vous prenez en compte les coûts de construction.
+
+Ainsi, les deux approches ont leur place en fonction des besoins et des contraintes spécifiques de votre application. En fin de compte, les deux méthodes ajoutent des informations au prompt initial. Dans le RAG, seules les informations pertinentes sont ajoutées au prompt, limitant le potentiel d'hallucination et le bruit, contrairement au long contexte, où vous ajoutez toutes les informations disponibles, mettant plus de charge sur le LLM lui-même.
+
+Le RAG est idéal pour les systèmes de support client et l'intégration de données en temps réel, tandis que les modèles à long contexte sont les meilleurs pour l'analyse complexe de documents uniques.
+
+### Une expérience rapide et amusante...
+
+Nous avons décidé de mener une coute expérience en comparant notre “AI Tutor” RAG avec un modèle à long contexte utilisant Gemini 1.5 Pro. Nous avons testé l'utilisation de 2 millions de tokens avec la documentation d’HugginFace Transformers sur notre système RAG et sur Gemini, et il semble que les deux ont pu nous donner la bonne réponse, bien que Gemini ait mis plus d'une minute à commencer à répondre, tandis que le chatbot RAG a répondu instantanément et nous a donné le lien vers la page spécifique de la source d’information.
+
+Pour finir, voici un résumé des points clés dans un tableau comparant à la fois le RAG et le long contexte pour diverses caractéristiques : 

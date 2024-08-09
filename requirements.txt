@@ -2,3 +2,5 @@ PyMuPDF
 numpy
 pillow
 openai
+nltk
+python-Levenshtein
