@@ -2,5 +2,4 @@ PyMuPDF
 numpy
 pillow
 openai
-nltk
-python-Levenshtein
+python-dotenv

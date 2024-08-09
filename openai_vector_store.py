@@ -1,13 +1,26 @@
 import os
 from openai import OpenAI
 import requests
+from dotenv import load_dotenv
+
+# Load environment variables from .env file
+load_dotenv()
 
 # Define the API key and vector store ID
 api_key = 'sk-...'
 
-def get_openai_client(api_key=api_key):
-    # Set the OpenAI API key
-    os.environ['OPENAI_API_KEY'] = api_key 
+def get_openai_client():
+    # Get the API key from the environment variables
+    api_key = os.getenv('OPENAI_API_KEY')
+    
+    # Check if the API key is found
+    if api_key is None:
+        raise ValueError("API key not found. Please set it in the .env file.")
+    
+    # Set the OpenAI API key in the environment
+    os.environ['OPENAI_API_KEY'] = api_key
+    
+    # Initialize and return the OpenAI client
     return OpenAI()
 
 def create_vector_store_openai(client, name, directory_path, batch_size=50):
