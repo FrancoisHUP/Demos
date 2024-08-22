@@ -1,6 +1,6 @@
 *.venv*
 *dataset*
-*out*
+*out/*
 */__pycache__/*
 *.vscode*
 .env

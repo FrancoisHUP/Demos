@@ -4,3 +4,7 @@ pillow
 openai
 nltk
 python-Levenshtein
+python-dotenv
+psycopg2
+uvicorn
+fastapi

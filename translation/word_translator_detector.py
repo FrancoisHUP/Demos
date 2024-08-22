@@ -1,8 +1,6 @@
 import json
-import nltk
 from nltk.stem import WordNetLemmatizer
 from nltk.tokenize import word_tokenize
-import Levenshtein
 
 # Load the dictionary
 with open('translated_words.json', 'r', encoding='utf-8') as file:
