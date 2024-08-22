@@ -1,5 +1,5 @@
 import React from "react";
-import { SearchResult } from "@/app/models/SearcResult";
+import { SearchResult } from "@/app/models/SearchResult";
 
 interface SearchResultsProps {
   results: SearchResult[];
@@ -41,8 +41,8 @@ const SearchResults: React.FC<SearchResultsProps> = ({
                 <g id="SVGRepo_bgCarrier" strokeWidth="0"></g>
                 <g
                   id="SVGRepo_tracerCarrier"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
                 ></g>
                 <g id="SVGRepo_iconCarrier">
                   <path d="M0 57.308l57.308-57.308 373.467 373.467-57.308 57.308z"></path>

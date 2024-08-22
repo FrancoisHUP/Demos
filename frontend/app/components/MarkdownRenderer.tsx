@@ -1,7 +1,8 @@
 import React from "react";
 import ReactMarkdown from "react-markdown";
+// import { Components } from "react-markdown";
 import rehypeRaw from "rehype-raw";
-import { Components } from "react-markdown/lib/ast-to-react";
+// import { Components } from "react-markdown/lib/ast-to-react";
 
 interface MarkdownRendererProps {
   content: string;

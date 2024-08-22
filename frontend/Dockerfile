@@ -1,14 +1,20 @@
-# Use the official Node.js image as a base
-FROM node:18-alpine
+# Use the official Node.js slim image as a base
+FROM node:18-slim
 
 # Set the working directory
 WORKDIR /app
 
-# Copy package.json and package-lock.json (or yarn.lock) first
+# Install necessary dependencies
+RUN apt-get update && apt-get install -y \
+    build-essential \
+    python3 \
+    && rm -rf /var/lib/apt/lists/*
+
+# Copy package.json and package-lock.json (or yarn.lock)
 COPY package*.json ./
 
-# Install dependencies first
-RUN npm install --production
+# Install dependencies
+RUN npm install 
 
 # Copy the rest of your application
 COPY . .

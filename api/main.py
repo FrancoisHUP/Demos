@@ -1,10 +1,3 @@
-# TODOs 
-# customize : system_prompt, black_list_words, few_shots_promting, llm call (with key)
-# UI : personnalize ui + login + save pref + save conversation -> requires database 
-# MUST work on local (dont requires to create an account)
-
-# endpoint : 
-# CRUD one words [EN-FR] and [FR-EN]
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 import json

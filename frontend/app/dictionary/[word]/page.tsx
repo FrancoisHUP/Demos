@@ -4,16 +4,15 @@ import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import Layout from "@/app/DashboardLayout";
 import { useRouter } from "next/navigation";
-
 import { useSearch } from "@/app/SearchContext";
 import SearchResults from "@/app/components/SearchResults";
-import SearcResult from "@/app/models/SearcResult";
+import { SearchResult } from "@/app/models/SearchResult";
 
 export default function WordPage() {
   const params = useParams();
 
   const { word } = params; // Get the dynamic word parameter
-  const [wordData, setWordData] = useState<SearcResult | null>(null);
+  const [wordData, setWordData] = useState<SearchResult | null>(null);
   const { results, searching, setResults, setSearching } = useSearch();
   const [user, setUser] = useState<any>(null);
   const router = useRouter();
@@ -27,9 +26,12 @@ export default function WordPage() {
       // Example: Fetch word data from an API or use static data
       const fetchData = async () => {
         try {
+          const wordStr = Array.isArray(word) ? word[0] : word;
           // test : http://localhost:3000/dictionary/AI%20art
           const response = await fetch(
-            `http://127.0.0.1:8000/dictionary/words/${encodeURIComponent(word)}`
+            `http://127.0.0.1:8000/dictionary/words/${encodeURIComponent(
+              wordStr
+            )}`
           );
           if (response.ok) {
             const data = await response.json();
@@ -85,7 +87,9 @@ export default function WordPage() {
               <ul>
                 {Object.entries(wordData.sources).map(
                   ([key, source], index) => (
-                    <a className="underline mr-2" href={source.url}>{source.word}</a>,
+                    <a className="underline mr-2" href={source.url} key={index}>
+                      {source.word}
+                    </a>
                   )
                 )}
               </ul>

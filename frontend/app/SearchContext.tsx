@@ -1,13 +1,20 @@
 "use client";
 
-import React, { createContext, useState, useContext, ReactNode } from "react";
-import { SearchResult } from "@/app/models/SearcResult";
+import React, {
+  createContext,
+  useState,
+  useContext,
+  ReactNode,
+  Dispatch,
+  SetStateAction,
+} from "react";
+import { SearchResult } from "@/app/models/SearchResult";
 
 interface SearchContextProps {
   results: SearchResult[];
   searching: boolean;
-  setResults: (results: SearchResult[]) => void;
-  setSearching: (searching: boolean) => void;
+  setResults: Dispatch<SetStateAction<SearchResult[]>>; // Update this line
+  setSearching: Dispatch<SetStateAction<boolean>>; // Update this line
 }
 
 const SearchContext = createContext<SearchContextProps | undefined>(undefined);

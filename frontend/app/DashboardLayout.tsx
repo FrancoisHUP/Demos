@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { onAuthStateChanged } from "firebase/auth";
 import { auth } from "@/firebaseConfig";
-import { SearchResult, ApiResponse } from "./models/SearcResult";
+import { SearchResult, ApiResponse } from "./models/SearchResult";
 import { useSearch } from "@/app/SearchContext";
 
 export default function Layout({
@@ -22,7 +22,7 @@ export default function Layout({
   const [searchTranslation, setSearchTranslation] = useState("");
   //   const [searching, setSearching] = useState(false);
   // const [results, setResults] = useState<SearchResult[]>([]);
-  const models = []; // Replace with your list of models
+  const models: string[] = []; // Replace with your list of models
 
   const router = useRouter();
 
@@ -306,28 +306,40 @@ export default function Layout({
                 className="bg-gray-700 rounded-full hover:bg-gray-600 p-1"
                 onClick={() => router.push("/profile")}
               >
-                <img
-                  src={user.photoURL || "/default-profile.png"} // Use a default image if photoURL is not available
-                  alt="User Profile"
-                  className="rounded-full w-8 h-8"
-                />
+                {user ? (
+                  <img
+                    src={user.photoURL || ""}
+                    alt="User Profile"
+                    className="rounded-full w-8 h-8"
+                  />
+                ) : (
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="#ffffff"
+                    viewBox="0 0 24 24"
+                    stroke="#ffffff"
+                    width="28"
+                    height="28"
+                  >
+                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z"></path>
+                  </svg>
+                )}
               </button>
             ) : (
-              <button
-                className="bg-gray-700 rounded-full hover:bg-gray-600 p-1"
-                onClick={() => router.push("/login")}
-              >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="#ffffff"
-                  viewBox="0 0 24 24"
-                  stroke="#ffffff"
-                  width="28"
-                  height="28"
+              <div>
+                <button
+                  className="bg-gray-700 rounded-lg hover:bg-gray-600 px-3 py-1 "
+                  onClick={() => router.push("/login")}
                 >
-                  <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z"></path>
-                </svg>
-              </button>
+                  Log in
+                </button>
+                <button
+                  className=" bg-gray-300 rounded-lg hover:bg-gray-600 px-3 py-1 text-black text-bold ml-3"
+                  onClick={() => router.push("/register")}
+                >
+                  Sign up
+                </button>
+              </div>
             )}
           </div>
         </header>
