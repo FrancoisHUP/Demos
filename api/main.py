@@ -19,6 +19,8 @@ import json
 from openai_rapper import GPT
 from search import search
 
+nltk.download('punkt_tab')
+
 def create_translation_mapping(dictionary):
     english_to_french = {}
     english_to_french_lower = {}
@@ -82,7 +84,7 @@ class TranslationRequest(BaseModel):
     model: str = "gpt-4o-mini"
 
 # Load the dictionary
-with open('../data/translated_words.json', 'r', encoding='utf-8') as file:
+with open('translated_words_en.json', 'r', encoding='utf-8') as file:
     dictionary = json.load(file)
 
 app = FastAPI()
