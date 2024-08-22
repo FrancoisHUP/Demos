@@ -45,13 +45,16 @@ export default function Layout({
     if (searchTerm.trim() === "") return;
 
     try {
-      const response = await fetch("http://localhost:8000/search", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ term: searchTerm }),
-      });
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/search`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ term: searchTerm }),
+        }
+      );
 
       if (!response.ok) {
         throw new Error("Failed to fetch data");

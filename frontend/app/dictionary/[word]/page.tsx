@@ -29,9 +29,9 @@ export default function WordPage() {
           const wordStr = Array.isArray(word) ? word[0] : word;
           // test : http://localhost:3000/dictionary/AI%20art
           const response = await fetch(
-            `http://127.0.0.1:8000/dictionary/words/${encodeURIComponent(
-              wordStr
-            )}`
+            `${
+              process.env.NEXT_PUBLIC_API_URL
+            }/dictionary/words/${encodeURIComponent(wordStr)}`
           );
           if (response.ok) {
             const data = await response.json();

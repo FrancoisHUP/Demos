@@ -99,14 +99,17 @@ export default function Home() {
         const abortController = new AbortController();
         abortControllerRef.current = abortController as AbortController | null;
 
-        const response = await fetch("http://localhost:8000/translation/", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ text: trimmedText }),
-          signal: abortController.signal,
-        });
+        const response = await fetch(
+          `${process.env.NEXT_PUBLIC_API_URL}/translation`,
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ text: trimmedText }),
+            signal: abortController.signal,
+          }
+        );
 
         const reader = response.body?.getReader();
         const decoder = new TextDecoder("utf-8");
