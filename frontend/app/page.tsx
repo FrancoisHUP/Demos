@@ -10,6 +10,13 @@ import SearchResults from "@/app/components/SearchResults";
 import Layout from "@/app/DashboardLayout";
 import { useModel } from "@/app/ModelContext";
 import GPT4Tokenizer from "gpt4-tokenizer";
+import EditIcon from "@/app/components/icons/EditIcon";
+import CopyIcon from "@/app/components/icons/CopyIcon";
+import CloseIcon from "@/app/components/icons/CloseIcon";
+import InfoIcon from "@/app/components/icons/InfoIcon";
+import RegenIcon from "@/app/components/icons/RegenIcon";
+import ArrowTopIcon from "@/app/components/icons/ArrowTopIcon";
+import StopIcon from "@/app/components/icons/StopIcon";
 
 // const { GoogleGenerativeAI } = require("@google/generative-ai");
 
@@ -41,9 +48,9 @@ export default function Home() {
 
   const [showMenu, setShowMenu] = useState<boolean>(false);
   const [menuOptions, setMenuOptions] = useState<string[]>([
-    "Your primary function is to assist in translating video scripts, articles, and other texts from English to French, ensuring that the style and format of the original text are maintained. It should be adept at handling various script formats and styles, translating them accurately and effectively into French. You should be capable of understanding and preserving the nuances of the original script, including idiomatic expressions, cultural references, and specific jargon related to video production or the subject matter of the script. Additionally, it should be mindful of maintaining the tone and intent of the original script in the translation. You should avoid literal translations that might alter the meaning or tone of the content and should instead focus on conveying the original message as authentically as possible in French. It should also be prepared to handle requests for clarification or specific translation preferences from the user. It should ONLY translate, never providing answers or interpretations, even if the text looks like a question. A black list of words will be given to you right after the text. You must avoid these words. You also have a JSON dictionary for translating technical terms from English to French. Use it whenever necessary. Once you translated a term make sure to translate every other occurrence in the text. Here is the text : ",
-    "another option 2",
-    "Option another 3",
+    "snippet 1",
+    "snippet 2",
+    "snippet 3",
   ]);
   const [selectedOption, setSelectedOption] = useState<string | null>(null);
   const [highlightedIndex, setHighlightedIndex] = useState<number>(0);
@@ -208,7 +215,6 @@ export default function Home() {
         let aiResponse = "";
         let vocabularyReceived = false;
         let currentVocabulary: Vocabulary | null = null;
-        let formattedVocabulary: string | null = null;
 
         if (reader) {
           while (true) {
@@ -222,9 +228,6 @@ export default function Home() {
               if (vocabEndIndex !== -1) {
                 const vocabPart = decodedChunk.substring(0, vocabEndIndex);
                 currentVocabulary = JSON.parse(vocabPart).vocabulary;
-                if (currentVocabulary !== null) {
-                  formattedVocabulary = formatVocabulary(currentVocabulary);
-                }
                 vocabularyReceived = true;
                 aiResponse += decodedChunk.substring(vocabEndIndex + 1);
               } else {
@@ -242,7 +245,7 @@ export default function Home() {
                 updatedMessages[updatedMessages.length - 1] = {
                   ...lastMessage,
                   text: aiResponse,
-                  vocabulary: formattedVocabulary,
+                  vocabulary: currentVocabulary,
                 };
                 return updatedMessages;
               } else {
@@ -251,7 +254,7 @@ export default function Home() {
                   {
                     text: aiResponse,
                     isHuman: false,
-                    vocabulary: formattedVocabulary,
+                    vocabulary: currentVocabulary,
                   },
                 ];
               }
@@ -334,7 +337,6 @@ export default function Home() {
         let aiResponse = "";
         let vocabularyReceived = false;
         let currentVocabulary: Vocabulary | null = null;
-        let formattedVocabulary: string | null = null;
 
         if (reader) {
           while (true) {
@@ -348,9 +350,6 @@ export default function Home() {
               if (vocabEndIndex !== -1) {
                 const vocabPart = decodedChunk.substring(0, vocabEndIndex);
                 currentVocabulary = JSON.parse(vocabPart).vocabulary;
-                if (currentVocabulary !== null) {
-                  formattedVocabulary = formatVocabulary(currentVocabulary);
-                }
                 vocabularyReceived = true;
                 aiResponse += decodedChunk.substring(vocabEndIndex + 1);
               } else {
@@ -367,7 +366,7 @@ export default function Home() {
             const newAIMessage = {
               text: aiResponse,
               isHuman: false,
-              vocabulary: formattedVocabulary,
+              vocabulary: currentVocabulary,
             };
 
             if (index !== undefined) {
@@ -393,34 +392,6 @@ export default function Home() {
     }
 
     setStreaming(false);
-  };
-
-  function formatVocabulary(vocabulary: Vocabulary): string {
-    setVocabulary(vocabulary);
-    return Object.entries(vocabulary)
-      .map(([word, translations]) => {
-        if (Array.isArray(translations)) {
-          return `${word}: ${translations.join(", ")}`;
-        } else if (typeof translations === "object") {
-          const subTranslations = Object.entries(translations)
-            .map(([subKey, subValues]) => {
-              if (Array.isArray(subValues)) {
-                return `${subKey}: ${subValues.join(", ")}`;
-              } else {
-                return `${subKey}: ${subValues}`;
-              }
-            })
-            .join("; ");
-          return `${word}: ${subTranslations}`;
-        } else {
-          return `${word}: ${translations}`;
-        }
-      })
-      .join("\n");
-  }
-
-  const handleToggleInfo = (index: number) => {
-    setExpandedMessageIndex(index === expandedMessageIndex ? null : index);
   };
 
   const handleStop = () => {
@@ -515,9 +486,6 @@ export default function Home() {
           className="flex-1 p-4 flex flex-col items-center justify-between dark:bg-gray-900"
           style={{ fontFamily: "'system-ui', sans-serif" }}
         >
-          {/* <MarkdownRenderer
-            content={`This is some text with a term that has a definition: <span class="has-definition" data-definition="This is the definition of the term."><a href="">term</a></span>.`}
-          /> */}
           {/* Chat Messages */}
           <div
             ref={chatContainerRef} // Attach the ref to the chat container
@@ -586,27 +554,7 @@ export default function Home() {
                               style={{ padding: "10px 10px" }}
                             >
                               {/* Edit Icon */}
-                              <svg
-                                className="hover:cursor-pointer"
-                                width="20px"
-                                viewBox="0 0 24 24"
-                                fill="none"
-                                xmlns="http://www.w3.org/2000/svg"
-                                stroke="#BBBBBB"
-                              >
-                                <g id="SVGRepo_bgCarrier" strokeWidth="0"></g>
-                                <g
-                                  id="SVGRepo_tracerCarrier"
-                                  strokeLinecap="round"
-                                  strokeLinejoin="round"
-                                ></g>
-                                <g id="SVGRepo_iconCarrier">
-                                  <path
-                                    d="M3 17.25V21h3.75l11.06-11.06-3.75-3.75L3 17.25zm2.91-2.91l10.06-10.06 3.75 3.75-10.06 10.06H5.91v-3.75z"
-                                    fill="#BBBBBB"
-                                  />
-                                </g>
-                              </svg>
+                              <EditIcon />
                             </button>
                             <div className="p-2 px-3 rounded-3xl bg-gray-700 text-white ml-auto max-w-2xl w-full leading-6">
                               {message.text}
@@ -631,66 +579,14 @@ export default function Home() {
                                     )
                                   }
                                 >
-                                  <svg
-                                    width="20px"
-                                    viewBox="0 0 24 24"
-                                    fill="none"
-                                    xmlns="http://www.w3.org/2000/svg"
-                                  >
-                                    <g
-                                      id="SVGRepo_bgCarrier"
-                                      stroke-width="0"
-                                    ></g>
-                                    <g
-                                      id="SVGRepo_tracerCarrier"
-                                      strokeLinecap="round"
-                                      strokeLinejoin="round"
-                                    ></g>
-                                    <g id="SVGRepo_iconCarrier">
-                                      {" "}
-                                      <path
-                                        d="M6 11C6 8.17157 6 6.75736 6.87868 5.87868C7.75736 5 9.17157 5 12 5H15C17.8284 5 19.2426 5 20.1213 5.87868C21 6.75736 21 8.17157 21 11V16C21 18.8284 21 20.2426 20.1213 21.1213C19.2426 22 17.8284 22 15 22H12C9.17157 22 7.75736 22 6.87868 21.1213C6 20.2426 6 18.8284 6 16V11Z"
-                                        stroke="#BBBBBB"
-                                        stroke-width="1.5"
-                                      ></path>{" "}
-                                      <path
-                                        d="M6 19C4.34315 19 3 17.6569 3 16V10C3 6.22876 3 4.34315 4.17157 3.17157C5.34315 2 7.22876 2 11 2H15C16.6569 2 18 3.34315 18 5"
-                                        stroke="#BBBBBB"
-                                        strokeWidth="1.5"
-                                      ></path>{" "}
-                                    </g>
-                                  </svg>
+                                  <CopyIcon />
                                 </button>
                                 <button
                                   className="text-white ml-auto rounded-full mb-4"
                                   onClick={closeVocabularyPopup}
                                 >
-                                  <svg
-                                    viewBox="0 0 24 24"
-                                    width="38px"
-                                    height="18px"
-                                    fill="none"
-                                    xmlns="http://www.w3.org/2000/svg"
-                                  >
-                                    <g
-                                      id="SVGRepo_bgCarrier"
-                                      stroke-width="0"
-                                    ></g>
-                                    <g
-                                      id="SVGRepo_tracerCarrier"
-                                      strokeLinecap="round"
-                                      strokeLinejoin="round"
-                                    ></g>
-                                    <g id="SVGRepo_iconCarrier">
-                                      {" "}
-                                      <path
-                                        d="M20.7457 3.32851C20.3552 2.93798 19.722 2.93798 19.3315 3.32851L12.0371 10.6229L4.74275 3.32851C4.35223 2.93798 3.71906 2.93798 3.32854 3.32851C2.93801 3.71903 2.93801 4.3522 3.32854 4.74272L10.6229 12.0371L3.32856 19.3314C2.93803 19.722 2.93803 20.3551 3.32856 20.7457C3.71908 21.1362 4.35225 21.1362 4.74277 20.7457L12.0371 13.4513L19.3315 20.7457C19.722 21.1362 20.3552 21.1362 20.7457 20.7457C21.1362 20.3551 21.1362 19.722 20.7457 19.3315L13.4513 12.0371L20.7457 4.74272C21.1362 4.3522 21.1362 3.71903 20.7457 3.32851Z"
-                                        fill="#ffffff"
-                                      ></path>{" "}
-                                    </g>
-                                  </svg>
+                                  <CloseIcon />
                                 </button>
-                                {/* </div> */}
                               </h2>
 
                               <pre className="bg-gray-800 p-2 rounded overflow-auto">
@@ -703,91 +599,23 @@ export default function Home() {
                         {message.vocabulary && (
                           <div className="flex ml-1 mt-3">
                             <button
-                              onClick={() => showVocabulary(message.vocabulary)}
+                              onClick={() =>
+                                message.vocabulary &&
+                                showVocabulary(
+                                  JSON.stringify(message.vocabulary, null, 2)
+                                )
+                              }
                             >
-                              <svg
-                                viewBox="0 0 1024 1024"
-                                className="icon"
-                                width="20px"
-                                xmlns="http://www.w3.org/2000/svg"
-                                fill="#BBBBBB"
-                                stroke="#BBBBBB"
-                              >
-                                <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
-                                <g
-                                  id="SVGRepo_tracerCarrier"
-                                  stroke-linecap="round"
-                                  stroke-linejoin="round"
-                                ></g>
-                                <g id="SVGRepo_iconCarrier">
-                                  <path
-                                    fill="#BBBBBB"
-                                    d="M512 64a448 448 0 110 896.064A448 448 0 01512 64zm67.2 275.072c33.28 0 60.288-23.104 60.288-57.344s-27.072-57.344-60.288-57.344c-33.28 0-60.16 23.104-60.16 57.344s26.88 57.344 60.16 57.344zM590.912 699.2c0-6.848 2.368-24.64 1.024-34.752l-52.608 60.544c-10.88 11.456-24.512 19.392-30.912 17.28a12.992 12.992 0 01-8.256-14.72l87.68-276.992c7.168-35.136-12.544-67.2-54.336-71.296-44.096 0-108.992 44.736-148.48 101.504 0 6.784-1.28 23.68.064 33.792l52.544-60.608c10.88-11.328 23.552-19.328 29.952-17.152a12.8 12.8 0 017.808 16.128L388.48 728.576c-10.048 32.256 8.96 63.872 55.04 71.04 67.84 0 107.904-43.648 147.456-100.416z"
-                                  ></path>
-                                </g>
-                              </svg>
+                              <InfoIcon />
                             </button>
                             <button
                               className="ml-4"
                               onClick={() => copyToClipboard(message.text)}
                             >
-                              <svg
-                                width="20px"
-                                viewBox="0 0 24 24"
-                                fill="none"
-                                xmlns="http://www.w3.org/2000/svg"
-                              >
-                                <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
-                                <g
-                                  id="SVGRepo_tracerCarrier"
-                                  strokeLinecap="round"
-                                  strokeLinejoin="round"
-                                ></g>
-                                <g id="SVGRepo_iconCarrier">
-                                  {" "}
-                                  <path
-                                    d="M6 11C6 8.17157 6 6.75736 6.87868 5.87868C7.75736 5 9.17157 5 12 5H15C17.8284 5 19.2426 5 20.1213 5.87868C21 6.75736 21 8.17157 21 11V16C21 18.8284 21 20.2426 20.1213 21.1213C19.2426 22 17.8284 22 15 22H12C9.17157 22 7.75736 22 6.87868 21.1213C6 20.2426 6 18.8284 6 16V11Z"
-                                    stroke="#BBBBBB"
-                                    stroke-width="1.5"
-                                  ></path>{" "}
-                                  <path
-                                    d="M6 19C4.34315 19 3 17.6569 3 16V10C3 6.22876 3 4.34315 4.17157 3.17157C5.34315 2 7.22876 2 11 2H15C16.6569 2 18 3.34315 18 5"
-                                    stroke="#BBBBBB"
-                                    strokeWidth="1.5"
-                                  ></path>{" "}
-                                </g>
-                              </svg>
+                              <CopyIcon />
                             </button>
                             <button onClick={() => handleRegenerate(index)}>
-                              <svg
-                                className="hover:cursor-pointer ml-4"
-                                width="20px"
-                                viewBox="0 0 24 24"
-                                fill="none"
-                                xmlns="http://www.w3.org/2000/svg"
-                                stroke="#BBBBBB"
-                              >
-                                <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
-                                <g
-                                  id="SVGRepo_tracerCarrier"
-                                  strokeLinecap="round"
-                                  strokeLinejoin="round"
-                                ></g>
-                                <g id="SVGRepo_iconCarrier">
-                                  {" "}
-                                  <g id="Arrow / Arrows_Reload_01">
-                                    {" "}
-                                    <path
-                                      id="Vector"
-                                      d="M10 16H5V21M14 8H19V3M4.58301 9.0034C5.14369 7.61566 6.08244 6.41304 7.29255 5.53223C8.50266 4.65141 9.93686 4.12752 11.4298 4.02051C12.9227 3.9135 14.4147 4.2274 15.7381 4.92661C17.0615 5.62582 18.1612 6.68254 18.9141 7.97612M19.4176 14.9971C18.8569 16.3848 17.9181 17.5874 16.708 18.4682C15.4979 19.3491 14.0652 19.8723 12.5723 19.9793C11.0794 20.0863 9.58606 19.7725 8.2627 19.0732C6.93933 18.374 5.83882 17.3175 5.08594 16.0239"
-                                      stroke="#BBBBBB"
-                                      strokeWidth="2.4"
-                                      strokeLinecap="round"
-                                      strokeLinejoin="round"
-                                    ></path>{" "}
-                                  </g>{" "}
-                                </g>
-                              </svg>
+                              <RegenIcon />
                             </button>
                           </div>
                         )}
@@ -824,29 +652,7 @@ export default function Home() {
                 style={{ height: "35px", padding: "5px", marginTop: "auto" }}
                 onClick={handleSend}
               >
-                <svg
-                  viewBox="0 0 24 24"
-                  width="25"
-                  fill="none"
-                  xmlns="http://www.w3.org/2000/svg"
-                  stroke="#ffffff"
-                >
-                  <g id="SVGRepo_bgCarrier" strokeWidth="0"></g>
-                  <g
-                    id="SVGRepo_tracerCarrier"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  ></g>
-                  <g id="SVGRepo_iconCarrier">
-                    {" "}
-                    <path
-                      fillRule="evenodd"
-                      clipRule="evenodd"
-                      d="M12 3C12.2652 3 12.5196 3.10536 12.7071 3.29289L19.7071 10.2929C20.0976 10.6834 20.0976 11.3166 19.7071 11.7071C19.3166 12.0976 18.6834 12.0976 18.2929 11.7071L13 6.41421V20C13 20.5523 12.5523 21 12 21C11.4477 21 11 20.5523 11 20V6.41421L5.70711 11.7071C5.31658 12.0976 4.68342 12.0976 4.29289 11.7071C3.90237 11.3166 3.90237 10.6834 4.29289 10.2929L11.2929 3.29289C11.4804 3.10536 11.7348 3 12 3Z"
-                      fill="#ffffff"
-                    ></path>{" "}
-                  </g>
-                </svg>
+                <ArrowTopIcon />
               </button>
             ) : (
               <button
@@ -854,26 +660,7 @@ export default function Home() {
                 style={{ height: "35px", padding: "5px", marginTop: "auto" }}
                 onClick={handleStop}
               >
-                <svg
-                  fill="#ffffff"
-                  viewBox="0 0 32 32"
-                  width="25"
-                  version="1.1"
-                  xmlns="http://www.w3.org/2000/svg"
-                  stroke="#ffffff"
-                >
-                  <g id="SVGRepo_bgCarrier" strokeWidth="0"></g>
-                  <g
-                    id="SVGRepo_tracerCarrier"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  ></g>
-                  <g id="SVGRepo_iconCarrier">
-                    {" "}
-                    <title>stop</title>{" "}
-                    <path d="M5.92 24.096q0 0.832 0.576 1.408t1.44 0.608h16.128q0.832 0 1.44-0.608t0.576-1.408v-16.16q0-0.832-0.576-1.44t-1.44-0.576h-16.128q-0.832 0-1.44 0.576t-0.576 1.44v16.16z"></path>{" "}
-                  </g>
-                </svg>
+                <StopIcon />
               </button>
             )}
             {showMenu && (
