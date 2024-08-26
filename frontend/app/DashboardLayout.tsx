@@ -4,6 +4,7 @@ import { onAuthStateChanged } from "firebase/auth";
 import { auth } from "@/firebaseConfig";
 import { SearchResult, ApiResponse } from "./models/SearchResult";
 import { useSearch } from "@/app/SearchContext";
+import { useModel } from "@/app/ModelContext";
 
 export default function Layout({
   children,
@@ -22,7 +23,14 @@ export default function Layout({
   const [searchTranslation, setSearchTranslation] = useState("");
   //   const [searching, setSearching] = useState(false);
   // const [results, setResults] = useState<SearchResult[]>([]);
-  const models: string[] = []; // Replace with your list of models
+  const models: string[] = [
+    "Gpt-4o",
+    "Gpt-4o-mini",
+    "Claude3.5-sonnet",
+    "Gemini-1.5-flash",
+  ]; // Replace with your list of models
+  // const [model, setModel] = useState<string>("Gpt4-o");
+  const { model, setModel } = useModel();
 
   const router = useRouter();
 
@@ -205,16 +213,16 @@ export default function Layout({
         <header className="p-2 bg-gray-200 dark:bg-gray-900 flex items-center">
           <div className="relative">
             <button
-              className="text-xl font-semibold bg-gray-700 text-white py-2 px-4 rounded-lg hover:bg-gray-600 flex ml-2"
+              className="text-xl font-semibold bg-gray-700 text-white py-2 px-4 rounded-lg hover:bg-gray-600 flex"
               onClick={() => setDropdownOpen(!isDropdownOpen)}
               style={{
                 transform: isSidebarOpen
-                  ? "translateX(0px)"
-                  : "translateX(140px)",
+                  ? "translateX(5px)"
+                  : "translateX(145px)",
                 transition: "transform 0.3s ease",
               }}
             >
-              Gpt4-o
+              {model}
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 width="24"
@@ -237,20 +245,20 @@ export default function Layout({
                 className="absolute mt-2 bg-white dark:bg-gray-800 rounded-lg shadow-lg w-48"
                 style={{
                   transform: isSidebarOpen
-                    ? "translateX(0px)"
-                    : "translateX(140px)",
+                    ? "translateX(5px)"
+                    : "translateX(145px)",
                   transition: "transform 0.3s ease",
                 }}
               >
-                <ul className="py-1">
+                <ul className="p-1">
                   {models.length > 0 ? (
                     models.map((model, index) => (
                       <li
                         key={index}
-                        className="px-4 py-2 text-gray-700 dark:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer"
+                        className="px-4 py-2 text-gray-700 dark:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg cursor-pointer"
                         onClick={() => {
                           // Handle model selection
-                          console.log(`Selected model: ${model}`);
+                          setModel(model);
                           setDropdownOpen(false);
                         }}
                       >
@@ -268,11 +276,8 @@ export default function Layout({
           </div>
 
           {/* Search Bar */}
-          <div className="flex-1 flex justify-center mx-2">
-            <div
-              className="relative w-full max-w-lg md:max-w-2xl"
-              style={{ minWidth: "50%" }}
-            >
+          <div className="flex-1 flex md:justify-center sm:justify-end mx-2">
+            <div className="relative" style={{ minWidth: "50%" }}>
               <input
                 type="text"
                 placeholder="Search the dictionary"
@@ -303,7 +308,7 @@ export default function Layout({
           </div>
 
           {/* Profile & login */}
-          <div className="ml-auto mx-2">
+          <div className="ml-auto mx-2 max-h-11">
             {user ? (
               <button
                 className="bg-gray-700 rounded-full hover:bg-gray-600 p-1"

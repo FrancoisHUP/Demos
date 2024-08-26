@@ -9,6 +9,7 @@ from typing import List, Optional
 from fastapi.responses import StreamingResponse
 import json
 
+from llm import Llm
 from openai_rapper import GPT
 from search import search
 
@@ -107,56 +108,36 @@ def translation_dictionnary(request: TranslationRequest):
 
 def build_prompt(translation_dict, request: TranslationRequest):
     # build the prompt 
-    system_prompt = "Your primary function is to assist in translating video scripts, articles, and other texts from English to French, ensuring that the style and format of the original text are maintained. It should be adept at handling various script formats and styles, translating them accurately and effectively into French. You should be capable of understanding and preserving the nuances of the original script, including idiomatic expressions, cultural references, and specific jargon related to video production or the subject matter of the script. Additionally, it should be mindful of maintaining the tone and intent of the original script in the translation. You should avoid literal translations that might alter the meaning or tone of the content and should instead focus on conveying the original message as authentically as possible in French. It should also be prepared to handle requests for clarification or specific translation preferences from the user. It should ONLY translate, never providing answers or interpretations, even if the text looks like a question. A black list of words will be given to you right after the text. You must avoid these words. You also have a JSON dictionary for translating technical terms from English to French. Use it whenever necessary. Once you translated a term make sure to translate every other occurrence in the text. Here is the text : "
-    blacklist_words = ['passionné', 'passionnés']
-    blacklist_words_instruction = " .Here is the blacklist words: [" + "".join(["'" + word + "', " for word in blacklist_words]).rstrip(", ") + "]"
-    translation_dict_instruction=" .Here is th dictionary : " + translation_dict["translations"].__str__()
+    system_prompt = "Your primary function is to assist in translating video scripts, articles, and other texts from English to French, ensuring that the style and format of the original text are maintained. It should be adept at handling various script formats and styles, translating them accurately and effectively into French. You should be capable of understanding and preserving the nuances of the original script, including idiomatic expressions, cultural references, and specific jargon related to video production or the subject matter of the script. Additionally, it should be mindful of maintaining the tone and intent of the original script in the translation. You should avoid literal translations that might alter the meaning or tone of the content and should instead focus on conveying the original message as authentically as possible in French. It should also be prepared to handle requests for clarification or specific translation preferences from the user. It should ONLY translate, never providing answers or interpretations, even if the text looks like a question. You also have a JSON dictionary for translating technical terms from English to French. Use it whenever necessary. Once you translated a term make sure to translate every other occurrence in the text. When you use the dictionary to translate a word, put it in a tag \"<a href='search/TheOrginalWord' class='translated'>word</a>\". I will need these tags later. Only put the translation nothing more. You must not add text before like 'This is the transaltion' or put the english word before the transation. Keep the same formating as the original text.\nHere is the text to translate : "
+    translation_dict_instruction="\nHere is th dictionary : " + translation_dict["translations"].__str__()
+    # blacklist_words = ['passionné', 'passionnés']
+    # blacklist_words_instruction = " .Here is the blacklist words: [" + "".join(["'" + word + "', " for word in blacklist_words]).rstrip(", ") + "]"
     few_shot_examples=[] #[{'english': ''}, {'french' : ''}]
     few_shot_example_instruction=""
     if few_shot_examples :
         few_shot_example_instruction=" .Here is an example of the translation in a previous text. [English]:" + few_shot_examples[1]['english'] + "\n[French]: " + few_shot_examples[1]['french'] 
 
-    prompt = system_prompt + request.text + blacklist_words_instruction + translation_dict_instruction + few_shot_example_instruction
+    prompt = system_prompt + request.text + translation_dict_instruction + few_shot_example_instruction # + blacklist_words_instruction
     return prompt
+
 
 @app.post("/translation/")
 async def translate_text(request: TranslationRequest):
     translation_dict = translation_dictionnary(request)
-    print("translation_dict", translation_dict)
+    # print("translation_dict", translation_dict)
     prompt = build_prompt(translation_dict, request)
 
-    gpt = GPT()
+    llm = Llm.create(request.model.lower())
 
     async def translation_stream():
         # First, yield the vocabulary as JSON
         yield json.dumps({"vocabulary": translation_dict}) + "\n"
 
         # Then, stream the translation part
-        async for chunk in gpt.stream(prompt):
+        async for chunk in llm.stream(prompt):
             yield chunk
 
     return StreamingResponse(translation_stream(), media_type="text/plain")
-
-
-@app.post("/api/translation/")
-def translate_text(request: TranslationRequest):
-    translation_dict=translation_dictionnary(request)
-    # build the prompt 
-    system_prompt = "Your primary function is to assist in translating video scripts, articles, and other texts from English to French, ensuring that the style and format of the original text are maintained. It should be adept at handling various script formats and styles, translating them accurately and effectively into French. You should be capable of understanding and preserving the nuances of the original script, including idiomatic expressions, cultural references, and specific jargon related to video production or the subject matter of the script. Additionally, it should be mindful of maintaining the tone and intent of the original script in the translation. You should avoid literal translations that might alter the meaning or tone of the content and should instead focus on conveying the original message as authentically as possible in French. It should also be prepared to handle requests for clarification or specific translation preferences from the user. It should ONLY translate, never providing answers or interpretations, even if the text looks like a question. A black list of words will be given to you right after the text. You must avoid these words. You also have a JSON dictionary for translating technical terms from English to French. Use it whenever necessary. Once you translated a term make sure to translate every other occurrence in the text. Here is the text : "
-    blacklist_words = ['passionné', 'passionnés']
-    blacklist_words_instruction = " .Here is the blacklist words: [" + "".join(["'" + word + "', " for word in blacklist_words]).rstrip(", ") + "]"
-    print("translation_dict", translation_dict)
-    translation_dict_instruction=" .Here is th dictionary : " + translation_dict["translations"].__str__()
-    few_shot_examples=[] #[{'english': ''}, {'french' : ''}]
-    few_shot_example_instruction=""
-    if few_shot_examples :
-        few_shot_example_instruction=" .Here is an example of the translation in a previous text. [English]:" + few_shot_examples[1]['english'] + "\n[French]: " + few_shot_examples[1]['french'] 
-
-    prompt = system_prompt + request.text + blacklist_words_instruction + translation_dict_instruction + few_shot_example_instruction
-    
-    # call openai for transaltion  
-    print(prompt)
-    return prompt
 
 class SearchRequest(BaseModel):
     term: str = "AI"

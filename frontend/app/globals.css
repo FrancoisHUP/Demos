@@ -60,16 +60,14 @@ body {
 
  /* Hover definition */
 .has-definition {
-  position: relative;
+  /* position: relative; */
   cursor: pointer;
-  color: rgb(255 202 0);
-  /* text-decoration: underline dotted; */
 }
 
 .has-definition::after {
   content: attr(data-definition);
   position: absolute;
-  bottom: 100%;
+  bottom: 0px;
   left: 50%;
   transform: translateX(-50%);
   background-color: #333;
@@ -87,4 +85,12 @@ body {
 .has-definition:hover::after {
   visibility: visible;
   opacity: 1;
+}
+
+a {
+  color: rgb(92 172 255)
+}
+
+.translated {
+  color: #ffd840;
 }
