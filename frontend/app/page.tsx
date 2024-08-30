@@ -17,7 +17,7 @@ import InfoIcon from "@/app/components/icons/InfoIcon";
 import RegenIcon from "@/app/components/icons/RegenIcon";
 import ArrowTopIcon from "@/app/components/icons/ArrowTopIcon";
 import StopIcon from "@/app/components/icons/StopIcon";
-
+import ArrowDownIcon from "@/app/components/icons/ArrowDownIcon";
 // const { GoogleGenerativeAI } = require("@google/generative-ai");
 
 type Vocabulary = {
@@ -72,6 +72,38 @@ export default function Home() {
   const [estimatedCost, setEstimatedCost] = useState<number>(0);
 
   const workerRef = useRef<Worker | null>(null);
+
+  const [autoScroll, setAutoScroll] = useState(true);
+  const lastScrollTop = useRef(0);
+
+  useEffect(() => {
+    if (autoScroll && chatContainerRef.current) {
+      chatContainerRef.current.scrollTop =
+        chatContainerRef.current.scrollHeight;
+    }
+  }, [chatMessages, autoScroll]);
+
+  useEffect(() => {
+    const chatContainer = chatContainerRef.current;
+
+    const handleScroll = () => {
+      if (chatContainer) {
+        const { scrollTop, scrollHeight, clientHeight } = chatContainer;
+        if (scrollTop < lastScrollTop.current) {
+          setAutoScroll(false);
+        } else if (scrollTop + clientHeight === scrollHeight) {
+          setAutoScroll(true);
+        }
+        lastScrollTop.current = scrollTop;
+      }
+    };
+
+    chatContainer?.addEventListener("scroll", handleScroll);
+
+    return () => {
+      chatContainer?.removeEventListener("scroll", handleScroll);
+    };
+  }, []);
 
   useEffect(() => {
     // Initialize the web worker
@@ -565,6 +597,19 @@ export default function Home() {
                     ) : (
                       <div>
                         <MarkdownRenderer content={message.text} />
+                        {!autoScroll && streaming && (
+                          <button
+                            className="glow-button "
+                            onClick={() => setAutoScroll(true)}
+                            style={{
+                              position: "absolute",
+                              bottom: "100px",
+                              left: "calc(50% - 20px)",
+                            }}
+                          >
+                            <ArrowDownIcon />
+                          </button>
+                        )}
                         {showVocabularyPopup && (
                           <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
                             <div className="bg-gray-700 p-4 rounded-lg shadow-lg w-1/2">
@@ -637,13 +682,14 @@ export default function Home() {
               onChange={handleTextareaChange}
               onKeyDown={handleTextareaKeyDown}
               style={{
-                width: "calc(100% - 100px)",
+                width: "calc(100% - 60px)",
                 maxHeight: "400px",
                 overflowY: "auto", // Directly use auto for scroll handling
               }}
               onKeyUp={(e) => {
                 adjustTextareaHeight(e.target as HTMLTextAreaElement);
               }}
+              disabled={showVocabularyPopup}
             />
 
             {!streaming ? (
@@ -651,6 +697,7 @@ export default function Home() {
                 className="absolute right-2 bottom-2 bg-gray-600 text-white rounded-full hover:bg-gray-500 focus:outline-none"
                 style={{ height: "35px", padding: "5px", marginTop: "auto" }}
                 onClick={handleSend}
+                disabled={showVocabularyPopup}
               >
                 <ArrowTopIcon />
               </button>
@@ -706,21 +753,12 @@ export default function Home() {
         </main>
       ) : (
         <main style={{ backgroundColor: "rgb(17 24 39)" }}>
-          {/* Display search results */}
-          <div className="flex-1 flex flex-col items-center mt-4">
-            <div className="w-full max-w-lg md:max-w-2xl">
-              {results.length > 0 || searching ? (
-                <SearchResults
-                  results={results}
-                  handleWordClick={handleWordClick}
-                  setResults={setResults}
-                  setSearching={setSearching}
-                />
-              ) : (
-                <p className="text-gray-500">No results found</p>
-              )}
-            </div>
-          </div>
+          <SearchResults
+            results={results}
+            handleWordClick={handleWordClick}
+            setResults={setResults}
+            setSearching={setSearching}
+          />
         </main>
       )}
     </Layout>

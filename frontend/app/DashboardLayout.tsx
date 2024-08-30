@@ -5,6 +5,7 @@ import { auth } from "@/firebaseConfig";
 import { SearchResult, ApiResponse } from "./models/SearchResult";
 import { useSearch } from "@/app/SearchContext";
 import { useModel } from "@/app/ModelContext";
+import ProfileIcon from "@/app/components/icons/ProfileIcon";
 
 export default function Layout({
   children,
@@ -70,7 +71,9 @@ export default function Layout({
 
       const data: ApiResponse = await response.json();
       // onSearchResults(data.result); // Pass the results to the callback function
+      console.log("data.result", data.result);
       setResults(data.result);
+
       //   console.log("Search results:", data.result);
     } catch (error) {
       console.error("Error:", error);
@@ -155,7 +158,7 @@ export default function Layout({
             <li>Translations</li>
             <li>
               <div className="text-left">
-                <div className="relative w-full max-w-lg md:max-w-2xl">
+                <div className="relative w-full max-w-lg md:max-w-2xl flex items-end">
                   <input
                     type="text"
                     placeholder="Search in translations"
@@ -205,13 +208,13 @@ export default function Layout({
 
       {/* Main Content */}
       <div
-        className={`flex-1 flex flex-col transition-all duration-300 ${
-          isSidebarOpen ? "ml-64" : "ml-0"
-        }`}
+        className={`flex-1 flex flex-col transition-all duration-300 
+          ${isSidebarOpen ? "ml-64" : "ml-0"}`}
       >
         {/* Header */}
         <header className="p-2 bg-gray-200 dark:bg-gray-900 flex items-center">
-          <div className="relative">
+          {/* Hamburger Menu */}
+          <div className="relative flex-shrink-0">
             <button
               className="text-xl font-semibold bg-gray-700 text-white py-2 px-4 rounded-lg hover:bg-gray-600 flex"
               onClick={() => setDropdownOpen(!isDropdownOpen)}
@@ -242,7 +245,7 @@ export default function Layout({
 
             {isDropdownOpen && (
               <div
-                className="absolute mt-2 bg-white dark:bg-gray-800 rounded-lg shadow-lg w-48"
+                className="absolute mt-2 dark:bg-gray-800 rounded-lg shadow-lg w-48 z-10"
                 style={{
                   transform: isSidebarOpen
                     ? "translateX(5px)"
@@ -257,7 +260,6 @@ export default function Layout({
                         key={index}
                         className="px-4 py-2 text-gray-700 dark:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg cursor-pointer"
                         onClick={() => {
-                          // Handle model selection
                           setModel(model);
                           setDropdownOpen(false);
                         }}
@@ -276,14 +278,27 @@ export default function Layout({
           </div>
 
           {/* Search Bar */}
-          <div className="flex-1 flex md:justify-center sm:justify-end mx-2">
-            <div className="relative" style={{ minWidth: "50%" }}>
+          <div
+            className="flex mx-4 flex items-center justify-center transition-all duration-300 ease-in-out"
+            style={{
+              width: "100%",
+              transform: isSidebarOpen
+                ? "translateX(15px)"
+                : "translateX(145px)",
+            }}
+          >
+            <div className="relative w-full max-w-lg">
               <input
                 type="text"
                 placeholder="Search the dictionary"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="float-end px-4 py-2 pr-12 rounded-lg bg-gray-700 text-white focus:outline-none transition-all duration-300 ease-in-out w-64 focus:w-3/4 focus:w-3/4"
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") {
+                    handleSearch();
+                  }
+                }}
+                className="w-full px-3 py-2 pr-12 rounded-lg bg-gray-700 text-white focus:outline-none transition-all duration-300 ease-in-out"
               />
               <button
                 className="absolute inset-y-0 right-0 px-4 py-2 bg-gray-700 text-white hover:bg-gray-600 rounded-r-lg focus:outline-none"
@@ -308,15 +323,18 @@ export default function Layout({
           </div>
 
           {/* Profile & login */}
-          <div className="ml-auto mx-2 max-h-11">
+          <div
+            className="ml-auto flex-shrink-0 mx-2 flex justify-end"
+            style={{ minWidth: isSidebarOpen ? "50px" : "185px" }}
+          >
             {user ? (
               <button
                 className="bg-gray-700 rounded-full hover:bg-gray-600 p-1"
                 onClick={() => router.push("/profile")}
               >
-                {user ? (
+                {user.photoURL ? (
                   <img
-                    src={user.photoURL || ""}
+                    src={user.photoURL}
                     alt="User Profile"
                     className="rounded-full w-8 h-8"
                   />
@@ -336,13 +354,13 @@ export default function Layout({
             ) : (
               <div>
                 <button
-                  className="bg-gray-700 rounded-lg hover:bg-gray-600 px-3 py-1 "
+                  className="bg-gray-700 rounded-lg hover:bg-gray-600 px-3 py-1"
                   onClick={() => router.push("/login")}
                 >
                   Log in
                 </button>
                 <button
-                  className=" bg-gray-300 rounded-lg hover:bg-gray-600 px-3 py-1 text-black text-bold ml-3"
+                  className="bg-gray-300 rounded-lg hover:bg-gray-600 px-3 py-1 text-black text-bold ml-3"
                   onClick={() => router.push("/register")}
                 >
                   Sign up

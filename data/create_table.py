@@ -23,12 +23,12 @@ cur = conn.cursor()
 
 # Prepare the insert query
 insert_query = """
-INSERT INTO dictionary (lang, word_embedding, word, url, french_words, english_words, definition, complement, sources)
-VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s);
+INSERT INTO dictionary (lang, word, url, french_words, english_words, definition, complement, sources)
+VALUES (%s, %s, %s, %s, %s, %s, %s, %s);
 """
 
 # Placeholder for the word embeddings (e.g., use a zero vector temporarily)
-embedding_placeholder = [0.0] * 1536  # Assuming 1536 dimensions
+# embedding_placeholder = [0.0] * 1536  # Assuming 1536 dimensions
 
 # Function to load and insert data
 def load_and_insert_data(file_path, lang):
@@ -36,7 +36,7 @@ def load_and_insert_data(file_path, lang):
         data = json.load(file)
     
     for entry in data:
-        word_embedding = embedding_placeholder  # Placeholder, replace with actual embedding
+        # word_embedding = embedding_placeholder  # Placeholder, replace with actual embedding
         word = entry.get("word")
         url = entry.get("url")
         french_words = entry.get("french_words")
@@ -48,8 +48,10 @@ def load_and_insert_data(file_path, lang):
         # Convert sources to JSONB
         sources_jsonb = json.dumps(sources)
 
+
         # Insert the data
-        cur.execute(insert_query, (lang, word_embedding, word, url, french_words, english_words, definition, complement, sources_jsonb))
+        cur.execute(insert_query, (lang , word, url, french_words, english_words, definition, complement, sources_jsonb))
+        # cur.execute(insert_query, (lang, word_embedding, word, url, french_words, english_words, definition, complement, sources_jsonb))
 
 # Load and insert data for both English and French JSON files
 load_and_insert_data("translated_words_en.json", "en")

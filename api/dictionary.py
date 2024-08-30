@@ -53,10 +53,6 @@ def read_word_by_text(word: str, db: psycopg2.extensions.connection = Depends(ge
 
     columns = [desc[0] for desc in cur.description]
     word_data = dict(zip(columns, row))
-    
-    # Convert the word_embedding from a string to a list of floats
-    if isinstance(word_data['word_embedding'], str):
-        word_data['word_embedding'] = ast.literal_eval(word_data['word_embedding'])
 
     return WordData(**word_data)
 

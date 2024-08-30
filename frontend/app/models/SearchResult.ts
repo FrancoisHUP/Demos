@@ -15,6 +15,23 @@ export interface SearchResult {
     similarity: number;
   }
   
-  export interface ApiResponse {
+export interface Definition {
+    id: number;
+    word: string;
+    definition: string[];
+}
+
+export interface PartialSearchResult {
+    word: string;
+    refs: number[];
+    lang: string;
+    word_embedding: string;
+    similarity: number;
+    definitions: Definition[];
+}
+
+export interface ApiResponse {
     result: SearchResult[];
-  }
+}
+
+  

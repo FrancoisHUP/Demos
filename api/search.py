@@ -39,45 +39,68 @@ def generate_embedding(text):
     embedding = response.data[0].embedding
     return embedding
 
-# Database search function
-def search(term: str):
+def search(term: str, page: int = 1, page_size: int = 10):
     term_lower = term.lower()
+    offset = (page - 1) * page_size
 
     # Connect to the database
     conn = psycopg2.connect(connection_string)
     cur = conn.cursor()
 
     # Exact match search
-    cur.execute("SELECT * FROM dictionary WHERE LOWER(word) = %s;", (term_lower,))
+    cur.execute("SELECT * FROM word_references WHERE LOWER(word) = %s;", (term_lower,))
     result = cur.fetchone()
 
     if result:
         columns = [desc[0] for desc in cur.description]
         word_data = dict(zip(columns, result))
         word_data["similarity"] = 1.0  # Exact match has similarity 1.0
+
+        # Fetch definitions from dictionary table using the ref array
+        ref_ids = word_data['refs']
+        cur.execute("SELECT id, word, definition FROM dictionary WHERE id = ANY(%s);", (ref_ids,))
+        definitions = cur.fetchall()
+        word_data["definitions"] = [{"id": row[0], "word": row[1] ,"definition": row[2]} for row in definitions]
+
+        # Close the database connection
+        cur.close()
+        conn.close()
+
         return [word_data]
 
     # If exact match not found, perform similarity search using pgvector's cosine_distance
     term_embedding = generate_embedding(term)
 
-    # Perform the similarity search directly in the database
+    # Perform the similarity search directly in the database with pagination
     cur.execute("""
         SELECT *, 1 - (word_embedding <=> %s) AS similarity
-        FROM dictionary
+        FROM word_references
         WHERE word_embedding IS NOT NULL
         ORDER BY word_embedding <=> %s
-        LIMIT 25;  -- You can adjust the number of results returned
-    """, (Json(term_embedding), Json(term_embedding)))
+        LIMIT %s OFFSET %s;  -- Pagination parameters
+    """, (Json(term_embedding), Json(term_embedding), page_size, offset))
 
     rows = cur.fetchall()
+
+    # Process the similarity search results
+    columns = [desc[0] for desc in cur.description]
+    relevant_results = []
+
+    for row in rows:
+        word_data = dict(zip(columns, row))
+
+        # Fetch definitions from dictionary table using the ref array
+        ref_ids = word_data['refs']
+        cur.execute("SELECT id, word, definition FROM dictionary WHERE id = ANY(%s);", (ref_ids,))
+        definitions = cur.fetchall()
+        word_data["definitions"] = [{"id": row[0], "word": row[1], "definition": row[2]} for row in definitions]
+
+        relevant_results.append(word_data)
 
     # Close the database connection
     cur.close()
     conn.close()
 
-    # Convert results to desired format
-    columns = [desc[0] for desc in cur.description]
-    relevant_results = [dict(zip(columns, row)) for row in rows]
-
     return relevant_results
+
 

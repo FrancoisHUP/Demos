@@ -1,8 +1,9 @@
-import React from "react";
-import { SearchResult } from "@/app/models/SearchResult";
+import React, { useState } from "react";
+import { SearchResult, PartialSearchResult } from "@/app/models/SearchResult";
+import CloseIcon from "./icons/CloseIcon";
 
 interface SearchResultsProps {
-  results: SearchResult[];
+  results: PartialSearchResult[];
   handleWordClick: (word: string) => void;
   setResults: React.Dispatch<React.SetStateAction<SearchResult[]>>;
   setSearching: React.Dispatch<React.SetStateAction<boolean>>;
@@ -14,66 +15,94 @@ const SearchResults: React.FC<SearchResultsProps> = ({
   setResults,
   setSearching,
 }) => {
+  const [selectedLanguage, setSelectedLanguage] = useState<string>(""); // State for selected language
+
+  // Filter results based on the selected language
+  const filteredResults = selectedLanguage
+    ? results.filter((result) => result.lang === selectedLanguage)
+    : results;
+
   return (
     <main style={{ backgroundColor: "rgb(17 24 39)" }}>
-      <div className="flex-1 flex flex-col items-center mt-4">
+      <div
+        className="flex-1 flex flex-col items-center mt-4"
+        style={{
+          backgroundColor: "rgb(17 24 39)",
+          height: "100%",
+          minHeight: "100vh",
+        }}
+      >
         <div className="w-full max-w-lg md:max-w-2xl">
           <div className="flex justify-between items-center">
             <h2 className="text-xl font-bold text-white my-4">
               Search Results
             </h2>
             <button
-              className="bg-gray-700 rounded-full p-3"
+              className="bg-gray-700 rounded-full"
+              style={{ padding: "8px 8px" }}
               onClick={() => {
                 setResults([]);
                 setSearching(false);
               }}
             >
-              <svg
-                fill="#ffffff"
-                height="15px"
-                width="15px"
-                version="1.1"
-                id="Capa_1"
-                viewBox="0 0 460.775 460.775"
-                stroke="#ffffff"
-              >
-                <g id="SVGRepo_bgCarrier" strokeWidth="0"></g>
-                <g
-                  id="SVGRepo_tracerCarrier"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                ></g>
-                <g id="SVGRepo_iconCarrier">
-                  <path d="M0 57.308l57.308-57.308 373.467 373.467-57.308 57.308z"></path>
-                  <path d="M430.775 57.308L57.308 430.775l-57.308-57.308 373.467-373.467z"></path>
-                </g>
-              </svg>
+              <CloseIcon />
             </button>
+          </div>
+          {/* Language Filter Dropdown */}
+          <div className="flex items-center mb-4">
+            <label className="text-white">Language</label>
+            <select
+              value={selectedLanguage}
+              onChange={(e) => setSelectedLanguage(e.target.value)}
+              className="bg-gray-700 text-white rounded p-1 ml-2"
+            >
+              <option value="">All</option>
+              <option value="en">English</option>
+              <option value="fr">French</option>
+              {/* Add more language options as needed */}
+            </select>
           </div>
         </div>
 
-        <div className="w-full max-w-lg md:max-w-2xl">
-          {results.length > 0 ? (
+        {filteredResults.length > 0 ? (
+          <div className="w-full max-w-lg md:max-w-2xl">
             <ul className="list-disc pl-5">
-              {results.map((result) => (
-                <li key={result.id} className="list-none mb-2">
+              {filteredResults.map((result) => (
+                <li key={result.word} className="list-none mb-2">
                   <a
-                    onClick={() => handleWordClick(result.word)}
+                    onClick={() => {
+                      setResults([]);
+                      setSearching(false);
+                      handleWordClick(result.definitions[0].word);
+                    }}
                     className="text-blue-500 hover:underline text-xl font-bold cursor-pointer"
                   >
                     {result.word}
                   </a>
                   <h2 className="font-bold mt-2 underline">Definition</h2>
-                  <p className="text-justify">{result.definition}</p>
+                  <p className="text-justify">
+                    {result.definitions[0].definition}
+                  </p>
+                  <h2 className="font-bold mt-2 underline">Related words</h2>
+                  {result.definitions.map((definition, index) => (
+                    <div key={index}>{definition.word}</div>
+                  ))}
                   <hr className="my-2" />
                 </li>
               ))}
             </ul>
-          ) : (
-            <p className="text-gray-500">No results found</p>
-          )}
-        </div>
+            <div className="flex justify-center items-center">
+              <button
+                className="bg-gray-700 rounded-full px-2 py-1 my-4"
+                onClick={() => {}}
+              >
+                Load More
+              </button>
+            </div>
+          </div>
+        ) : (
+          <p className="text-gray-500">No results found</p>
+        )}
       </div>
     </main>
   );

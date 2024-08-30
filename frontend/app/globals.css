@@ -94,3 +94,39 @@ a {
 .translated {
   color: #ffd840;
 }
+
+:root {
+  --glow-color-0: rgba(55, 65, 85, 0.8);
+  --glow-color-1: rgba(55, 65, 85, 0.6);
+  --glow-color-2: rgba(55, 65, 85, 0.4); 
+  /* --glow-color-10: rgba(255, 255, 255, 0.03); */
+}
+
+.glow-button {
+  background: #374155;
+  border: none;
+  border-radius: 50%;
+  color: white;
+  cursor: pointer;
+  font-size: 16px;
+  padding: 5px 5px;
+  text-align: center;
+  transition: transform 0.3s, box-shadow 0.3s;
+  box-shadow: 0 0 15px var(--glow-color-1), 0 0 20px var(--glow-color-2);
+  animation: glow 1.5s infinite alternate;
+}
+
+.glow-button:hover {
+  transform: scale(1.1);
+  box-shadow: 0 0 25px var(--glow-color-0), 0 0 35px var(--glow-color-1);
+}
+
+@keyframes glow {
+  from {
+    box-shadow: 0 0 15px var(--glow-color-1), 0 0 20px var(--glow-color-2);
+  } 
+  to {
+    box-shadow: 0 0 25px var(--glow-color-0), 0 0 35px var(--glow-color-1);
+  }
+}
+
